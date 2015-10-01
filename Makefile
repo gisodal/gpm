@@ -49,7 +49,6 @@ ODIR = obj
 SDIR = src
 IDIR = include
 TDIR = tar
-UDIR = usr
 DIR  = $(shell cd "$( dirname "$0" )" && pwd)
 
 ARCH = $(shell getconf LONG_BIT)
