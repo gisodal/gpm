@@ -113,6 +113,7 @@ DYNAMICLIB = lib$(PROJECT).so.$(VERSION).$(SUBVERSION).$(PATCHLEVEL)
 	build-x86       \
 	build-x64       \
 	debug           \
+	strip			\
 	profile         \
 	assembly        \
 	install-bin     \
@@ -156,6 +157,10 @@ build-x64: build
 debug: CFLAGS = $(CDFLAGS)
 debug: O = -O0
 debug: build
+
+# strip stl library sybols
+strip:
+	strip -w -N '_ZNSt*' $(BDIR)/$(PROJECT)
 
 # compile with profile
 profile: O = -O0 -pg
@@ -278,6 +283,7 @@ help:
 	@echo "    build-x86 : Explicitly compile for 32bit architecture"
 	@echo "    build-x64 : Explicitly compile for 64bit architecture"
 	@echo "    debug     : compile with debug symbols"
+	@echo "    strip     : remove stl library symbols from binary"
 	@echo "    profile   : compile with profiling capabilities"
 	@echo "    assembly  : print assembly"
 	@echo "    lines     : print #lines of code to compile"

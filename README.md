@@ -27,6 +27,7 @@ The only requirement is to put your C (extension \*.c) or C++ (extension \*.cc) 
 |build-x86      | Explicitly compile for 32bit architecture |
 |build-x64      | Explicitly compile for 64bit architecture |
 |debug          | compile with debug symbols                |
+|strip          | remove stl library symbols from binary|
 |profile        | compile with profiling capabilities       |
 |assembly       | print assembly                            |
 |lines          | print #lines of code to compile           |
