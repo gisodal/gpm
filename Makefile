@@ -112,6 +112,7 @@ DYNAMICLIB = lib$(PROJECT).so.$(VERSION).$(SUBVERSION).$(PATCHLEVEL)
 	rebuild         \
 	build-x86       \
 	build-x64       \
+	error           \
 	debug           \
 	strip			\
 	profile         \
@@ -158,12 +159,17 @@ debug: CFLAGS = $(CDFLAGS)
 debug: O = -O0
 debug: build
 
+# compile until first error
+error: CFLAGS += -Wfatal-errors
+error: build
+
 # strip stl library sybols
 strip:
 	strip -w -N '_ZNSt*' $(BDIR)/$(PROJECT)
 
 # compile with profile
-profile: O = -O0 -pg
+profile: CFLAGS += -pg
+profile: LINK = -pg
 profile: build
 
 # compile to assembly
@@ -203,7 +209,7 @@ $(ODIR)/%.o: $(SDIR)/%.cc | $(ODIR)
 
 # create (link) executable binary
 $(BDIR)/$(PROJECT): $(OBJS) | $(BDIR)
-	$(CC) -o $@ $(OBJS) $(LIB) $(DYNAMIC)
+	$(CC) -o $@ $(OBJS) $(LIB) $(LINK)
 
 # install to PREFIX
 install-bin: $(PREFIX)/$(BDIR)/$(PROJECT)
