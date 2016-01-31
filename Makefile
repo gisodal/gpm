@@ -163,7 +163,7 @@ debug: build
 error: CFLAGS += -Wfatal-errors
 error: build
 
-# strip stl library sybols
+# strip stl library symbols
 strip:
 	strip -w -N '_ZNSt*' $(BDIR)/$(PROJECT)
 
