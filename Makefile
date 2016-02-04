@@ -273,7 +273,7 @@ tarball: $(TDIR)
 
 # print how many lines of code to compile
 lines:
-	@wc -l $(IDIR)/* $(SDIR)/*
+	@find $(IDIR) $(SDIR) -maxdepth 1 -type f | xargs wc -l
 
 # cleanup
 clean:
