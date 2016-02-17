@@ -126,6 +126,7 @@ DYNAMICLIB = lib$(PROJECT).so.$(VERSION).$(SUBVERSION).$(PATCHLEVEL)
 	debug-static    \
 	dynamic         \
 	debug-dynamic   \
+	setup           \
 	tarball         \
 	lines           \
 	clean           \
@@ -237,6 +238,15 @@ $(PREFIX)/$(IDIR)/$(PROJECT)/%.h: $(IDIR)/%.h
 install: install-bin install-include install-static
 
 # create directories
+$(SDIR)/main.cc: $(SDIR)
+	@echo -e "int main(int argc, char **argv){\n    return 0;\n}\n" >> $@
+	@echo "created $@"
+
+setup: $(IDIR) $(SDIR)/main.cc
+
+$(SDIR):
+	mkdir $(SDIR)
+
 $(LDIR):
 	mkdir $(LDIR)
 
