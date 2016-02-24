@@ -87,13 +87,14 @@ INC = $(foreach d, $(INCLUDE_DIR),-I$d)
 # shared/static libraries to link
 STATIC = $(foreach l, $(STATIC_LIBRARIES),-l$l)
 SHARED = $(foreach l, $(SHARED_LIBRARIES),-l$l)
+SHARED_LIBRARY_DIR = $(foreach l, $(LIBRARY_DIR),-Wl,-R$l)
 
 ifneq ($(STATIC),)
 	LIB += -Wl,-Bstatic $(STATIC)
 endif
 
 ifneq ($(SHARED),)
-	LIB += -Wl,-Bdynamic $(SHARED)
+	LIB += -Wl,-Bdynamic $(SHARED) $(SHARED_LIBRARY_DIR)
 else ifneq ($(STATIC),)
 	LIB += -Wl,-Bdynamic
 endif
