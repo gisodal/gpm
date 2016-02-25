@@ -204,14 +204,18 @@ debug-dynamic: dynamic
 
 # create object and dependency files
 $(ODIR)/%.o: $(SDIR)/%.c | $(ODIR)
-	gcc -o $@ -c $< $(O) $(CFLAGS) $(INC) -MMD
+	@echo "CC $(notdir $<)"
+	@gcc -o $@ -c $< $(O) $(CFLAGS) $(INC) -MMD
 
 $(ODIR)/%.o: $(SDIR)/%.cc | $(ODIR)
-	g++ -o $@ -c $< $(O) $(CFLAGS) $(CXXFLAGS) $(INC) -MMD
+	@echo "CXX $(notdir $<)"
+	@g++ -o $@ -c $< $(O) $(CFLAGS) $(CXXFLAGS) $(INC) -MMD
 
 # create (link) executable binary
 $(BDIR)/$(PROJECT): $(OBJS) | $(BDIR)
-	$(CC) -o $@ $(OBJS) $(LIB) $(LINK)
+	@echo "LINKING"
+	@$(CC) -o $@ $(OBJS) $(LIB) $(LINK)
+	@echo "DONE"
 
 # install to PREFIX
 install-bin: $(PREFIX)/$(BDIR)/$(PROJECT)
