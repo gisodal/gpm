@@ -182,7 +182,8 @@ assembly: build
 static: $(LDIR)/$(STATICLIB)
 
 $(LDIR)/$(STATICLIB): $(LIBOBJS) | $(LDIR)
-	ar rcs $(LDIR)/$(STATICLIB) $(LIBOBJS)
+	@echo "LINK STATIC LIB"
+	@ar rcs $(LDIR)/$(STATICLIB) $(LIBOBJS)
 
 debug-static: CFLAGS = $(CDFLAGS)
 debug-static: O = -O0
@@ -193,10 +194,11 @@ dynamic: $(LDIR)/$(DYNAMICLIB)
 
 $(LDIR)/$(DYNAMICLIB): CFLAGS += -fPIC
 $(LDIR)/$(DYNAMICLIB): $(LIBOBJS) | $(LDIR)
-	$(CC) -shared -fPIC -Wl,-soname,lib$(PROJECT).so.$(VERSION) -o $(LDIR)/$(DYNAMICLIB) $(LIBOBJS)
-	ln -sf $(DYNAMICLIB) $(LDIR)/lib$(PROJECT).so
-	ln -sf $(DYNAMICLIB) $(LDIR)/lib$(PROJECT).so.$(VERSION)
-	ln -sf $(DYNAMICLIB) $(LDIR)/lib$(PROJECT).so.$(VERSION).$(SUBVERSION)
+	@echo "LINK SHARED LIB"
+	@$(CC) -shared -fPIC -Wl,-soname,lib$(PROJECT).so.$(VERSION) -o $(LDIR)/$(DYNAMICLIB) $(LIBOBJS)
+	@ln -sf $(DYNAMICLIB) $(LDIR)/lib$(PROJECT).so
+	@ln -sf $(DYNAMICLIB) $(LDIR)/lib$(PROJECT).so.$(VERSION)
+	@ln -sf $(DYNAMICLIB) $(LDIR)/lib$(PROJECT).so.$(VERSION).$(SUBVERSION)
 
 debug-dynamic: CFLAGS = $(CDFLAGS)
 debug-dynamic: O = -O0
@@ -213,31 +215,33 @@ $(ODIR)/%.o: $(SDIR)/%.cc | $(ODIR)
 
 # create (link) executable binary
 $(BDIR)/$(PROJECT): $(OBJS) | $(BDIR)
-	@echo "LINKING"
+	@echo "LINK EXECUTABLE"
 	@$(CC) -o $@ $(OBJS) $(LIB) $(LINK)
-	@echo "DONE"
 
 # install to PREFIX
 install-bin: $(PREFIX)/$(BDIR)/$(PROJECT)
 
 $(PREFIX)/$(BDIR)/$(PROJECT): $(BDIR)/$(PROJECT) | $(PREFIX)/$(BDIR)
-	cp $(BDIR)/$(PROJECT) $(PREFIX)/$(BDIR)/$(PROJECT)
+	@echo "INSTALL $(BDIR)/$(PROJECT)"
+	@cp $(BDIR)/$(PROJECT) $(PREFIX)/$(BDIR)/$(PROJECT)
 
 install-static: $(PREFIX)/$(LDIR)$(ARCH)/$(STATICLIB)
 
 $(PREFIX)/$(LDIR)$(ARCH)/$(STATICLIB): $(LDIR)/$(STATICLIB) | $(PREFIX)/$(LDIR)$(ARCH)
-	cp $(LDIR)/$(STATICLIB) $(PREFIX)/$(LDIR)$(ARCH)
+	@echo "INSTALL $(STATICLIB)"
+	@cp $(LDIR)/$(STATICLIB) $(PREFIX)/$(LDIR)$(ARCH)
 
 install-dynamic: $(PREFIX)/$(LDIR)$(ARCH)/$(DYNAMICLIB)
 
 $(PREFIX)/$(LDIR)$(ARCH)/$(DYNAMICLIB): $(LDIR)/$(DYNAMICLIB) | $(PREFIX)/$(LDIR)$(ARCH)
-		cp $(LDIR)/lib$(PROJECT).so* $(PREFIX)/$(LDIR)$(ARCH)
+	@echo "INSTALL lib$(PROJECT).so"
+	@cp $(LDIR)/lib$(PROJECT).so* $(PREFIX)/$(LDIR)$(ARCH)
 
 install-include: $(PREFIX)/$(IDIR)/$(PROJECT) $(patsubst $(IDIR)/%,$(PREFIX)/$(IDIR)/$(PROJECT)/%,$(wildcard $(IDIR)/*.h) $(wildcard $(IDIR)/**/*.h))
 
 $(PREFIX)/$(IDIR)/$(PROJECT)/%.h: $(IDIR)/%.h
-	@mkdir -p $(dir $@)
-	cp $< $@
+	@echo "INSTALL $(notdir $<)"
+	@cp $< $@
 	@sed -i '/#include .*\.tcc/d' $@
 
 install: install-bin install-include install-static
@@ -245,43 +249,52 @@ install: install-bin install-include install-static
 # create directories
 $(SDIR)/main.cc: $(SDIR)
 	@echo -e "int main(int argc, char **argv){\n    return 0;\n}\n" >> $@
-	@echo "created $@"
+	@echo "CREATED $@"
 
 setup: $(IDIR) $(SDIR)/main.cc
 
 $(SDIR):
-	mkdir $(SDIR)
+	@echo "MKDIR $@"
+	@mkdir $(SDIR)
 
 $(LDIR):
-	mkdir $(LDIR)
+	@echo "MKDIR $@"
+	@mkdir $(LDIR)
 
 $(BDIR):
-	mkdir $(BDIR)
+	@echo "MKDIR $@"
+	@mkdir $(BDIR)
 
 $(ODIR):
-	mkdir $(ODIR)
+	@echo "MKDIR $@"
+	@mkdir $(ODIR)
 
 $(IDIR):
-	mkdir $(IDIR)
+	@echo "MKDIR $@"
+	@mkdir $(IDIR)
 
 $(TDIR):
-	mkdir $(TDIR)
+	@echo "MKDIR $@"
+	@mkdir $(TDIR)
 
 $(PREFIX)/$(LDIR)$(ARCH):
-	mkdir -p $(PREFIX)/$(LDIR)$(ARCH)
+	@echo "MKDIR $@"
+	@mkdir -p $(PREFIX)/$(LDIR)$(ARCH)
 
 $(PREFIX)/$(BDIR):
-	mkdir -p $(PREFIX)/$(BDIR)
+	@echo "MKDIR $@"
+	@mkdir -p $(PREFIX)/$(BDIR)
 
 $(PREFIX)/$(IDIR)/$(PROJECT):
-	mkdir -p $(PREFIX)/$(IDIR)/$(PROJECT)
+	@echo "MKDIR $@"
+	@mkdir -p $(PREFIX)/$(IDIR)/$(PROJECT)
 
 # create a tarball from source files
 tarball: TARFILE = $$(echo $(TDIR)/$(PROJECT)_$$(date +"%Y_%m_%d_%H_%M_%S") | tr -d ' ').tar.xz
 tarball: $(TDIR)
 	@XZ_OPT="-9" tar --exclude=".*" -cvJf $(TARFILE) $(IDIR) $(SDIR) Makefile readme* README* INSTALL LICENSE 2>/dev/null; echo;
 	@if [ -f $(TARFILE) ]; then                    \
-	     echo "Created file: $(TARFILE)";          \
+	     echo "CREATED TAR: $(TARFILE)";          \
 	 else                                          \
 	     echo "Tarball '$(TARFILE)' not created";  \
 	 fi;
@@ -292,7 +305,8 @@ lines:
 
 # cleanup
 clean:
-	$(RM) -r $(ODIR) $(BDIR) $(LDIR)
+	@echo "CLEAN"
+	@$(RM) -r $(ODIR) $(BDIR) $(LDIR)
 
 # echo make options
 help:
