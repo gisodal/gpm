@@ -182,7 +182,7 @@ assembly: build
 static: $(LDIR)/$(STATICLIB)
 
 $(LDIR)/$(STATICLIB): $(LIBOBJS) | $(LDIR)
-	@echo "LINK STATIC LIB"
+	@echo "LINK STATIC LIBRARY"
 	@ar rcs $(LDIR)/$(STATICLIB) $(LIBOBJS)
 
 debug-static: CFLAGS = $(CDFLAGS)
@@ -194,7 +194,7 @@ dynamic: $(LDIR)/$(DYNAMICLIB)
 
 $(LDIR)/$(DYNAMICLIB): CFLAGS += -fPIC
 $(LDIR)/$(DYNAMICLIB): $(LIBOBJS) | $(LDIR)
-	@echo "LINK SHARED LIB"
+	@echo "LINK SHARED LIBRARY"
 	@$(CC) -shared -fPIC -Wl,-soname,lib$(PROJECT).so.$(VERSION) -o $(LDIR)/$(DYNAMICLIB) $(LIBOBJS)
 	@ln -sf $(DYNAMICLIB) $(LDIR)/lib$(PROJECT).so
 	@ln -sf $(DYNAMICLIB) $(LDIR)/lib$(PROJECT).so.$(VERSION)
@@ -228,13 +228,13 @@ $(PREFIX)/$(BDIR)/$(PROJECT): $(BDIR)/$(PROJECT) | $(PREFIX)/$(BDIR)
 install-static: $(PREFIX)/$(LDIR)$(ARCH)/$(STATICLIB)
 
 $(PREFIX)/$(LDIR)$(ARCH)/$(STATICLIB): $(LDIR)/$(STATICLIB) | $(PREFIX)/$(LDIR)$(ARCH)
-	@echo "INSTALL $(STATICLIB)"
+	@echo "INSTALL $(LDIR)/$(STATICLIB)"
 	@cp $(LDIR)/$(STATICLIB) $(PREFIX)/$(LDIR)$(ARCH)
 
 install-dynamic: $(PREFIX)/$(LDIR)$(ARCH)/$(DYNAMICLIB)
 
 $(PREFIX)/$(LDIR)$(ARCH)/$(DYNAMICLIB): $(LDIR)/$(DYNAMICLIB) | $(PREFIX)/$(LDIR)$(ARCH)
-	@echo "INSTALL lib$(PROJECT).so"
+	@echo "INSTALL $(LDIR)/lib$(PROJECT).so"
 	@cp $(LDIR)/lib$(PROJECT).so* $(PREFIX)/$(LDIR)$(ARCH)
 
 install-include: $(PREFIX)/$(IDIR)/$(PROJECT) $(patsubst $(IDIR)/%,$(PREFIX)/$(IDIR)/$(PROJECT)/%,$(wildcard $(IDIR)/*.h) $(wildcard $(IDIR)/**/*.h))
@@ -249,7 +249,7 @@ install: install-bin install-include install-static
 # create directories
 $(SDIR)/main.cc: $(SDIR)
 	@echo -e "int main(int argc, char **argv){\n    return 0;\n}\n" >> $@
-	@echo "CREATED $@"
+	@echo "CREATE $@"
 
 setup: $(IDIR) $(SDIR)/main.cc
 
@@ -292,12 +292,8 @@ $(PREFIX)/$(IDIR)/$(PROJECT):
 # create a tarball from source files
 tarball: TARFILE = $$(echo $(TDIR)/$(PROJECT)_$$(date +"%Y_%m_%d_%H_%M_%S") | tr -d ' ').tar.xz
 tarball: $(TDIR)
-	@XZ_OPT="-9" tar --exclude=".*" -cvJf $(TARFILE) $(IDIR) $(SDIR) Makefile readme* README* INSTALL LICENSE 2>/dev/null; echo;
-	@if [ -f $(TARFILE) ]; then                    \
-	     echo "CREATED TAR: $(TARFILE)";          \
-	 else                                          \
-	     echo "Tarball '$(TARFILE)' not created";  \
-	 fi;
+	@echo "CREATE TAR $(TARFILE)";
+	@XZ_OPT="-9" tar --exclude=".*" -cvJf $(TARFILE) $(IDIR) $(SDIR) Makefile | sed 's:^:    ADD :'
 
 # print how many lines of code to compile
 lines:
@@ -305,7 +301,7 @@ lines:
 
 # cleanup
 clean:
-	@echo "CLEAN"
+	@echo "RM $(ODIR) $(BDIR) $(LDIR)"
 	@$(RM) -r $(ODIR) $(BDIR) $(LDIR)
 
 # echo make options
