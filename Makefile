@@ -11,29 +11,7 @@
 # User variables
 # ------------------------------------------------------------------------------
 
-# project name (directory name is used if left blank)
-PROJECT =
-
-# project version
-VERSION    = 1
-SUBVERSION = 0
-PATCHLEVEL = 0
-
-# install prefix
-PREFIX =
-
-# library and include paths (space separated value)
-LIBRARY_DIR =
-INCLUDE_DIR =
-
-# static and shared libraries to be linked (space separated values)
-STATIC_LIBRARIES =
-SHARED_LIBRARIES =
-
-# compiler and compiler flags
-CXXFLAGS = -std=c++11
-CFLAGS   = -w
-O        = -O3
+include Makefile.user
 
 # ------------------------------------------------------------------------------
 # environment variables
@@ -52,7 +30,7 @@ TDIR = tar
 DIR  = $(shell cd "$( dirname "$0" )" && pwd)
 
 ARCH = $(shell getconf LONG_BIT)
-CDFLAGS  = -g -Wall -Wextra -D DEBUG -Wno-format -Wno-write-strings -Wno-unused-function -Wno-system-headers
+CDFLAGS  = -g -Wall -Wextra -D DEBUG -Wno-format -Wno-write-strings -Wno-unused-function -Wno-unused-parameter -Wno-system-headers
 
 # set containting directory is default project name
 ifeq ($(PROJECT),)
@@ -61,7 +39,7 @@ endif
 
 # install dir
 ifeq ($(PREFIX),)
-	PREFIX=$(HOME)
+	PREFIX=$(HOME)/usr
 endif
 
 # set compiler
@@ -167,7 +145,8 @@ error: build
 
 # strip stl library symbols
 strip:
-	strip -w -N '_ZNSt*' $(BDIR)/$(PROJECT)
+	@echo "STRIP $(BDIR)/$(PROJECT)"
+	@strip -w -N '_ZNSt*' $(BDIR)/$(PROJECT)
 
 # compile with profile
 profile: CFLAGS += -pg
@@ -182,7 +161,7 @@ assembly: build
 static: $(LDIR)/$(STATICLIB)
 
 $(LDIR)/$(STATICLIB): $(LIBOBJS) | $(LDIR)
-	@echo "LINK STATIC LIBRARY"
+	@echo "LINK $(LDIR)/$(STATICLIB)"
 	@ar rcs $(LDIR)/$(STATICLIB) $(LIBOBJS)
 
 debug-static: CFLAGS = $(CDFLAGS)
@@ -194,7 +173,7 @@ dynamic: $(LDIR)/$(DYNAMICLIB)
 
 $(LDIR)/$(DYNAMICLIB): CFLAGS += -fPIC
 $(LDIR)/$(DYNAMICLIB): $(LIBOBJS) | $(LDIR)
-	@echo "LINK SHARED LIBRARY"
+	@echo "LINK $(LDIR)/lib$(PROJECT).so"
 	@$(CC) -shared -fPIC -Wl,-soname,lib$(PROJECT).so.$(VERSION) -o $(LDIR)/$(DYNAMICLIB) $(LIBOBJS)
 	@ln -sf $(DYNAMICLIB) $(LDIR)/lib$(PROJECT).so
 	@ln -sf $(DYNAMICLIB) $(LDIR)/lib$(PROJECT).so.$(VERSION)
@@ -206,16 +185,16 @@ debug-dynamic: dynamic
 
 # create object and dependency files
 $(ODIR)/%.o: $(SDIR)/%.c | $(ODIR)
-	@echo "CC $(notdir $<)"
+	@echo "CC $<"
 	@gcc -o $@ -c $< $(O) $(CFLAGS) $(INC) -MMD
 
 $(ODIR)/%.o: $(SDIR)/%.cc | $(ODIR)
-	@echo "CXX $(notdir $<)"
+	@echo "CXX $<"
 	@g++ -o $@ -c $< $(O) $(CFLAGS) $(CXXFLAGS) $(INC) -MMD
 
 # create (link) executable binary
 $(BDIR)/$(PROJECT): $(OBJS) | $(BDIR)
-	@echo "LINK EXECUTABLE"
+	@echo "LINK $@"
 	@$(CC) -o $@ $(OBJS) $(LIB) $(LINK)
 
 # install to PREFIX
@@ -240,14 +219,14 @@ $(PREFIX)/$(LDIR)$(ARCH)/$(DYNAMICLIB): $(LDIR)/$(DYNAMICLIB) | $(PREFIX)/$(LDIR
 install-include: $(PREFIX)/$(IDIR)/$(PROJECT) $(patsubst $(IDIR)/%,$(PREFIX)/$(IDIR)/$(PROJECT)/%,$(wildcard $(IDIR)/*.h) $(wildcard $(IDIR)/**/*.h))
 
 $(PREFIX)/$(IDIR)/$(PROJECT)/%.h: $(IDIR)/%.h
-	@echo "INSTALL $(notdir $<)"
+	@echo "INSTALL $<"
 	@cp $< $@
 	@sed -i '/#include .*\.tcc/d' $@
 
 install: install-bin install-include install-static
 
 # create directories
-$(SDIR)/main.cc: $(SDIR)
+$(SDIR)/main.cc: | $(SDIR)
 	@echo -e "int main(int argc, char **argv){\n    return 0;\n}\n" >> $@
 	@echo "CREATE $@"
 

@@ -1,0 +1,24 @@
+# project name (directory name is used if left blank)
+PROJECT =
+
+# project version
+VERSION    = 1
+SUBVERSION = 0
+PATCHLEVEL = 0
+
+# install prefix
+PREFIX =
+
+# library and include paths (space separated value)
+LIBRARY_DIR =
+INCLUDE_DIR =
+
+# static and shared libraries to be linked (space separated values)
+STATIC_LIBRARIES =
+SHARED_LIBRARIES =
+
+# compiler and compiler flags
+CXXFLAGS = -std=c++11
+CFLAGS   = -w
+O        = -O3
+
