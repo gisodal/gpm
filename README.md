@@ -3,7 +3,7 @@
 A general purpose makefile for C and C++ projects using the gcc compiler (linux).
 
 ## Synopsis
-Tired of writing a makefile for every project? This makefile compiles and creates libraries for you, by simply putting your code files in the proper directory and running this makefile. No changes to the makefile are required.
+Tired of writing a makefile for every project? This makefile compiles source projects and creates libraries for you, by simply putting your code files in the proper directory hierarchy and running this makefile. Customizations are optional and can be make in Makefile.user, in order to include external libraries, add an install prefix, set the name of your executable, etc.
 
 ## Requirement
 The only requirement is to put your C (extension \*.c) or C++ (extension \*.cc) files into the 'src' directory, and the header files into to the 'include' directory. The directory hierarchy relative to the makefile is as follows:
