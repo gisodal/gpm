@@ -79,6 +79,7 @@ endif
 
 STATICLIB  = lib$(PROJECT).a
 DYNAMICLIB = lib$(PROJECT).so.$(VERSION).$(SUBVERSION).$(PATCHLEVEL)
+STATICLIBS = $(foreach l, $(STATIC_LIBRARIES), $(foreach d, $(LIBRARY_DIR), $(wildcard $d/lib$l.a)))
 
 # ------------------------------------------------------------------------------
 # Rules
@@ -193,7 +194,7 @@ $(ODIR)/%.o: $(SDIR)/%.cc | $(ODIR)
 	@g++ -o $@ -c $< $(O) $(CFLAGS) $(CXXFLAGS) $(INC) -MMD
 
 # create (link) executable binary
-$(BDIR)/$(PROJECT): $(OBJS) | $(BDIR)
+$(BDIR)/$(PROJECT): $(OBJS) $(STATICLIBS) | $(BDIR)
 	@echo "LINK $@"
 	@$(CC) -o $@ $(OBJS) $(LIB) $(LINK)
 
