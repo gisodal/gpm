@@ -30,7 +30,7 @@ TDIR = tar
 DIR  = $(shell cd "$( dirname "$0" )" && pwd)
 
 ARCH = $(shell getconf LONG_BIT)
-CDFLAGS  = -g -Wall -Wextra -D DEBUG -Wno-format -Wno-write-strings -Wno-unused-function -Wno-unused-parameter -Wno-system-headers
+CDFLAGS += -g -Wall -Wextra -D DEBUG -Wno-format -Wno-write-strings -Wno-unused-function -Wno-unused-parameter -Wno-system-headers
 
 # set containting directory is default project name
 ifeq ($(PROJECT),)
