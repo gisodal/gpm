@@ -221,6 +221,7 @@ install-include: $(PREFIX)/$(IDIR)/$(PROJECT) $(patsubst $(IDIR)/%,$(PREFIX)/$(I
 
 $(PREFIX)/$(IDIR)/$(PROJECT)/%.h: $(IDIR)/%.h
 	@echo "INSTALL $<"
+	@mkdir -p $(dir $@)
 	@cp $< $@
 	@sed -i '/#include .*\.tcc/d' $@
 
