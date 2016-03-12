@@ -217,7 +217,7 @@ $(PREFIX)/$(LDIR)$(ARCH)/$(DYNAMICLIB): $(LDIR)/$(DYNAMICLIB) | $(PREFIX)/$(LDIR
 	@echo "INSTALL $(LDIR)/lib$(PROJECT).so"
 	@cp $(LDIR)/lib$(PROJECT).so* $(PREFIX)/$(LDIR)$(ARCH)
 
-install-include: $(PREFIX)/$(IDIR)/$(PROJECT) $(patsubst $(IDIR)/%,$(PREFIX)/$(IDIR)/$(PROJECT)/%,$(wildcard $(IDIR)/*.h) $(wildcard $(IDIR)/**/*.h))
+install-include: $(PREFIX)/$(IDIR)/$(PROJECT) $(patsubst $(IDIR)/%,$(PREFIX)/$(IDIR)/$(PROJECT)/%,$(shell find $(IDIR) -follow -type f -name '*.h'))
 
 $(PREFIX)/$(IDIR)/$(PROJECT)/%.h: $(IDIR)/%.h
 	@echo "INSTALL $<"
