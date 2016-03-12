@@ -8,13 +8,35 @@
 # 	- directory include  : put header files here (*.h)
 
 # ------------------------------------------------------------------------------
-# User variables
+# Default user variables
 # ------------------------------------------------------------------------------
 
-include Makefile.user
+# project name (directory name is used if left blank)
+PROJECT =
+
+# project version
+VERSION    = 1
+SUBVERSION = 0
+PATCHLEVEL = 0
+
+# install prefix
+PREFIX = $(HOME)/usr
+
+# library and include paths (space separated value)
+LIBRARY_DIR =
+INCLUDE_DIR =
+
+# static and shared libraries to be linked (space separated values)
+STATIC_LIBRARIES =
+SHARED_LIBRARIES =
+
+# compiler and compiler flags
+CXXFLAGS = -std=c++11
+CFLAGS   = -w
+O        = -O3
 
 # ------------------------------------------------------------------------------
-# environment variables
+# Directory variables
 # ------------------------------------------------------------------------------
 
 # use bash instead of sh
@@ -25,11 +47,23 @@ BDIR = bin
 LDIR = lib
 ODIR = obj
 SDIR = src
-IDIR = include
 TDIR = tar
+IDIR = include
+ARCH = $(shell getconf LONG_BIT)
 DIR  = $(shell cd "$( dirname "$0" )" && pwd)
 
-ARCH = $(shell getconf LONG_BIT)
+# ------------------------------------------------------------------------------
+# User variables
+# ------------------------------------------------------------------------------
+
+USERMAKEFILE = Makefile.user
+
+-include $(DIR)/$(USERMAKEFILE)
+
+# ------------------------------------------------------------------------------
+# Compilation variables
+# ------------------------------------------------------------------------------
+
 CDFLAGS += -g -Wall -Wextra -D DEBUG -Wno-format -Wno-write-strings -Wno-unused-function -Wno-unused-parameter -Wno-system-headers
 
 # set containting directory is default project name
@@ -82,6 +116,12 @@ DYNAMICLIB = lib$(PROJECT).so.$(VERSION).$(SUBVERSION).$(PATCHLEVEL)
 STATICLIBS = $(foreach l, $(STATIC_LIBRARIES), $(foreach d, $(LIBRARY_DIR), $(wildcard $d/lib$l.a)))
 
 # ------------------------------------------------------------------------------
+# Functions
+# ------------------------------------------------------------------------------
+
+recursivewildcard=$(wildcard $1$2) $(foreach d,$(wildcard $1*),$(call recursivewildcard,$d/,$2))
+
+# ------------------------------------------------------------------------------
 # Rules
 # ------------------------------------------------------------------------------
 
@@ -107,9 +147,11 @@ STATICLIBS = $(foreach l, $(STATIC_LIBRARIES), $(foreach d, $(LIBRARY_DIR), $(wi
 	dynamic         \
 	debug-dynamic   \
 	setup           \
-	tarball         \
+	config			\
+	dist         	\
 	lines           \
 	clean           \
+	cleandist		\
 	help
 
 # default rule
@@ -217,7 +259,7 @@ $(PREFIX)/$(LDIR)$(ARCH)/$(DYNAMICLIB): $(LDIR)/$(DYNAMICLIB) | $(PREFIX)/$(LDIR
 	@echo "INSTALL $(LDIR)/lib$(PROJECT).so"
 	@cp $(LDIR)/lib$(PROJECT).so* $(PREFIX)/$(LDIR)$(ARCH)
 
-install-include: $(PREFIX)/$(IDIR)/$(PROJECT) $(patsubst $(IDIR)/%,$(PREFIX)/$(IDIR)/$(PROJECT)/%,$(shell find $(IDIR) -follow -type f -name '*.h'))
+install-include: $(PREFIX)/$(IDIR)/$(PROJECT) $(patsubst $(IDIR)/%,$(PREFIX)/$(IDIR)/$(PROJECT)/%,$(call recursivewildcard,$(IDIR)/,*.h))
 
 $(PREFIX)/$(IDIR)/$(PROJECT)/%.h: $(IDIR)/%.h
 	@echo "INSTALL $<"
@@ -229,10 +271,18 @@ install: install-bin install-include install-static
 
 # create directories
 $(SDIR)/main.cc: | $(SDIR)
-	@echo -e "int main(int argc, char **argv){\n    return 0;\n}\n" >> $@
 	@echo "CREATE $@"
+	@echo -e "int main(int argc, char **argv){\n    return 0;\n}\n" >> $@
 
 setup: $(IDIR) $(SDIR)/main.cc
+
+
+config: $(USERMAKEFILE)
+
+
+$(USERMAKEFILE):
+	@echo "CREATE $(USERMAKEFILE)"
+	@cat Makefile | head -36 | tail -23 > $(USERMAKEFILE)
 
 $(SDIR):
 	@echo "MKDIR $@"
@@ -271,10 +321,10 @@ $(PREFIX)/$(IDIR)/$(PROJECT):
 	@mkdir -p $(PREFIX)/$(IDIR)/$(PROJECT)
 
 # create a tarball from source files
-tarball: TARFILE = $$(echo $(TDIR)/$(PROJECT)_$$(date +"%Y_%m_%d_%H_%M_%S") | tr -d ' ').tar.xz
-tarball: $(TDIR)
+dist: TARFILE = $$(echo $(TDIR)/$(PROJECT)_$$(date +"%Y_%m_%d_%H_%M_%S") | tr -d ' ').tar.xz
+dist: $(TDIR)
 	@echo "CREATE TAR $(TARFILE)";
-	@XZ_OPT="-9" tar --exclude=".*" -cvJf $(TARFILE) $(IDIR) $(SDIR) Makefile | sed 's:^:    ADD :'
+	@XZ_OPT="-9" tar --exclude=".*" -cvJf $(TARFILE) $(wildcard $(IDIR) $(SDIR) Makefile $(USERMAKEFILE) INSTALL README README.md)| sed 's:^:    ADD :'
 
 # print how many lines of code to compile
 lines:
@@ -285,12 +335,17 @@ clean:
 	@echo "RM $(ODIR) $(BDIR) $(LDIR)"
 	@$(RM) -r $(ODIR) $(BDIR) $(LDIR)
 
+# cleanup
+cleandist:
+	@echo "RM $(ODIR)"
+	@$(RM) -r $(ODIR)
+
 # echo make options
 help:
-	@echo "Usage     :"
+	@echo "Usage:"
 	@echo "    make [option]"
 	@echo ""
-	@echo "Options   :"
+	@echo "Options:"
 	@echo "    build*    : compile to binary"
 	@echo "    rebuild   : recompile"
 	@echo "    build-x86 : Explicitly compile for 32bit architecture"
@@ -299,20 +354,23 @@ help:
 	@echo "    strip     : remove stl library symbols from binary"
 	@echo "    profile   : compile with profiling capabilities"
 	@echo "    assembly  : print assembly"
-	@echo "    lines     : print #lines of code to compile"
+	@echo "    lines     : print #lines in source files"
 	@echo "    static    : create static library"
 	@echo "    dynamic   : create dynamic library"
-	@echo "    install   : compile and install project to PREFIX"
+	@echo "    install   : compile and install project to prefix"
+	@echo "    setup     : create directory hierarchy and main.cc"
+	@echo "    config    : create Makefile.user for user customizations"
 	@echo "    clean     : remove object files, libraries and binary"
-	@echo "    tarball   : create tarball of source files"
+	@echo "    cleandist : remove object files"
+	@echo "    dist      : create tarball of source files"
 	@echo ""
 	@echo "    * = default"
 	@echo ""
-	@echo "Directory hierarchy :"
-	@echo "    src      : source files (*.[c|cc])"
-	@echo "    include  : header files (*.h)"
-	@echo "    obj      : object and dependency files"
-	@echo "    lib      : static/shared libraries"
-	@echo "    bin      : executable binary"
-	@echo "    tar      : tarballs"
+	@echo "Directory hierarchy:"
+	@echo "    src       : source files (*.[c|cc])"
+	@echo "    include   : header files (*.h)"
+	@echo "    obj       : object and dependency files"
+	@echo "    lib       : static/shared libraries"
+	@echo "    bin       : executable binary"
+	@echo "    tar       : tarballs"
 

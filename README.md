@@ -23,19 +23,22 @@ The only requirement is to put your C (extension \*.c) or C++ (extension \*.cc) 
 | Option | Description |
 | --- |--- |
 |build *or* all\* | compile to binary                       |
-|rebuild        | recompile                                 |
-|build-x86      | Explicitly compile for 32bit architecture |
-|build-x64      | Explicitly compile for 64bit architecture |
-|debug          | compile with debug symbols                |
-|strip          | remove stl library symbols from binary|
-|profile        | compile with profiling capabilities       |
-|assembly       | print assembly                            |
-|lines          | print #lines of code to compile           |
-|static         | create static library                     |
-|dynamic        | create dynamic library                    |
-|install        | compile and install project to PREFIX"    |
-|clean          | remove object files, libraries and binary |
-|tarball        | create tarball of source files            |
+| rebuild   | recompile                                     |
+| build-x86 | Explicitly compile for 32bit architecture     |
+| build-x64 | Explicitly compile for 64bit architecture     |
+| debug     | compile with debug symbols                    |
+| strip     | remove stl library symbols from binary        |
+| profile   | compile with profiling capabilities           |
+| assembly  | print assembly                                |
+| lines     | print #lines in source files                  |
+| static    | create static library                         |
+| dynamic   | create dynamic library                        |
+| install   | compile and install project to prefix         |
+| setup     | create directory hierarchy and main.cc        |
+| config    | create Makefile.user for user customizations  |
+| clean     | remove object files, libraries and binary     |
+| cleandist | remove object files                           |
+| dist      | create tarball of source files                |
 
 \* = default.
 
