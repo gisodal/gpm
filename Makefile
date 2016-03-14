@@ -328,7 +328,7 @@ $(PREFIX)/$(IDIR)/$(PROJECT):
 dist: TARFILE = $$(echo $(TDIR)/$(PROJECT)_$$(date +"%Y_%m_%d_%H_%M_%S") | tr -d ' ').tar.xz
 dist: $(TDIR)
 	@echo "CREATE TAR $(TARFILE)";
-	@XZ_OPT="-9" tar --exclude=".*" -cvJf $(TARFILE) \
+	@XZ_OPT="-9" tar --exclude=".*" -cvJf $(TARFILE) --transform 's,^,$(PROJECT)/,' \
 		$(wildcard $(IDIR) $(SDIR) Makefile $(MAKEFILE_USER) INSTALL README README.md) \
 		| sed 's:^:    ADD :'
 
