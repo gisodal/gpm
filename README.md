@@ -42,5 +42,5 @@ The only requirement is to put your C (extension \*.c) or C++ (extension \*.cc) 
 
 \* = default.
 
-NOTE: when creating a dynamic library, one needs to recompile all source files, due to required '-fPIC' compiler option (on x86\_64 architectures). For this reason, **make install** will only copy the static library.
+Do not edit the makefile. To customize, type `make config` and edit `Makefile.user`.
 
