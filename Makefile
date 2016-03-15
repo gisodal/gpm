@@ -283,10 +283,12 @@ config: $(MAKEFILE_USER)
 
 $(MAKEFILE_USER):
 	@echo "CREATE $(MAKEFILE_USER)"
-	@cat Makefile | head -21 | tail -8 		>  $(MAKEFILE_USER)
 	@echo "# install prefix" 				>> $(MAKEFILE_USER)
 	@echo "PREFIX ?=" 						>> $(MAKEFILE_USER)
-	@cat Makefile | head -34 | tail -10 	>> $(MAKEFILE_USER)
+	@echo 									>> $(MAKEFILE_USER)
+	@cat Makefile | head -34 | tail -20 	>> $(MAKEFILE_USER)
+
+
 
 $(SDIR):
 	@echo "MKDIR $@"
