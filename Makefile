@@ -62,6 +62,10 @@ MAKEFILE_USER = Makefile.user
 # Compilation variables
 # ------------------------------------------------------------------------------
 
+# dont print directory of recursive make
+MAKEFLAGS += --no-print-directory
+
+# debug compiler flags
 CDFLAGS += -g -Wall -Wextra -D DEBUG -Wno-format -Wno-write-strings \
 		   -Wno-unused-function -Wno-unused-parameter -Wno-system-headers
 
@@ -152,18 +156,22 @@ recursivewildcard=$(wildcard $1$2) $(foreach d,$(wildcard $1*),$(call recursivew
  	cleandist		\
 	pull   			\
 	dist         	\
+	silent			\
 	help
 
 # default rule
-$(PROJECT): all
+$(PROJECT): all | silent
 
 # include file dependencies (to recompile when headers change)
 -include $(DEPS)
 
 # main compile rules
+silent:
+	@:
+
 all: build
 
-build: $(BDIR)/$(PROJECT)
+build: $(BDIR)/$(PROJECT) | silent
 
 rebuild: clean build
 
@@ -271,7 +279,7 @@ $(PREFIX)/$(IDIR)/$(PROJECT)/%.h: $(IDIR)/%.h
 install: install-bin install-include install-static
 
 # create directories
-$(SDIR)/main.cc: | $(SDIR)
+$(SDIR)/main.cc: | $(SDIR) silent
 	@echo "CREATE $@"
 	@echo -e "int main(int argc, char **argv){\n    return 0;\n}\n" >> $@
 
@@ -281,7 +289,7 @@ setup: $(IDIR) $(SDIR)/main.cc
 config: $(MAKEFILE_USER)
 
 
-$(MAKEFILE_USER):
+$(MAKEFILE_USER): | silent
 	@echo "CREATE $(MAKEFILE_USER)"
 	@cat Makefile | head -21 | tail -8 		>  $(MAKEFILE_USER)
 	@echo "# install prefix" 				>> $(MAKEFILE_USER)
