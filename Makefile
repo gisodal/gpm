@@ -203,7 +203,7 @@ assembly: build
 # create static library
 static: $(LDIR)/$(STATICLIB)
 
-$(LDIR)/$(STATICLIB): $(LIBOBJS) | $(LDIR)
+$(LDIR)/$(STATICLIB): $(LIBOBJS) $(STATICLIBS) | $(LDIR)
 	@echo "LINK $(LDIR)/$(STATICLIB)"
 	@ar rcs $(LDIR)/$(STATICLIB) $(LIBOBJS)
 
@@ -215,7 +215,7 @@ debug-static: static
 dynamic: $(LDIR)/$(DYNAMICLIB)
 
 $(LDIR)/$(DYNAMICLIB): CFLAGS += -fPIC
-$(LDIR)/$(DYNAMICLIB): $(LIBOBJS) | $(LDIR)
+$(LDIR)/$(DYNAMICLIB): $(LIBOBJS) $(STATICLIBS) | $(LDIR)
 	@echo "LINK $(LDIR)/lib$(PROJECT).so"
 	@$(CC) -shared -fPIC -Wl,-soname,lib$(PROJECT).so.$(VERSION) -o $(LDIR)/$(DYNAMICLIB) $(LIBOBJS)
 	@ln -sf $(DYNAMICLIB) $(LDIR)/lib$(PROJECT).so
