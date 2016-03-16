@@ -22,7 +22,7 @@ The only requirement is to put your C (extension \*.c) or C++ (extension \*.cc) 
 
 | Option | Description |
 | --- |--- |
-|build *or* all\* | compile to binary                       |
+| build\*   | compile to binary (*alias* of $(PROJECT) and all)|
 | rebuild   | recompile                                     |
 | build-x86 | Explicitly compile for 32bit architecture     |
 | build-x64 | Explicitly compile for 64bit architecture     |
@@ -39,6 +39,7 @@ The only requirement is to put your C (extension \*.c) or C++ (extension \*.cc) 
 | clean     | remove object files, libraries and binary     |
 | cleandist | remove object files                           |
 | dist      | create tarball of source files                |
+| help      | print this help                               |
 
 \* = default.
 
