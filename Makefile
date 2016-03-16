@@ -91,9 +91,9 @@ LIBOBJS  = $(filter-out $(ODIR)/main.o, $(OBJS))
 DEPS     = $(OBJS:.o=.d)
 
 # library / include paths
-INCLUDE_DIR = $(IDIR) $(INCLUDE_DIR)
-INCLUDE = $(foreach d, $(INCLUDE_DIR),-I$d)
-LIBRARY = $(foreach d, $(LIBRARY_DIR),-L$d)
+INCLUDE_DIR := $(IDIR) $(INCLUDE_DIR)
+INCLUDE     := $(foreach d, $(INCLUDE_DIR),-I$d)
+LIBRARY 	:= $(foreach d, $(LIBRARY_DIR),-L$d)
 
 # shared/static libraries to link
 STATIC = $(foreach l, $(STATIC_LIBRARIES),-l$l)
@@ -101,13 +101,13 @@ SHARED = $(foreach l, $(SHARED_LIBRARIES),-l$l)
 SHARED_LIBRARY_DIR = $(foreach l, $(LIBRARY_DIR),-Wl,-R$l)
 
 ifneq ($(STATIC),)
-	LIB += -Wl,-Bstatic $(STATIC)
+	LIBRARY += -Wl,-Bstatic $(STATIC)
 endif
 
 ifneq ($(SHARED),)
-	LIB += -Wl,-Bdynamic $(SHARED) $(SHARED_LIBRARY_DIR)
+	LIBRARY += -Wl,-Bdynamic $(SHARED) $(SHARED_LIBRARY_DIR)
 else ifneq ($(STATIC),)
-	LIB += -Wl,-Bdynamic
+	LIBRARY += -Wl,-Bdynamic
 endif
 
 STATICLIB  = lib$(PROJECT).a
@@ -237,6 +237,7 @@ $(ODIR)/%.o: $(SDIR)/%.cc | $(ODIR)
 # create (link) executable binary
 $(BDIR)/$(PROJECT): $(OBJS) $(STATICLIBS) | $(BDIR)
 	@echo "LINK $@"
+	@echo $(CC) -o $@ $(OBJS) $(LIBRARY) $(LFLAGS)
 	@$(CC) -o $@ $(OBJS) $(LIBRARY) $(LFLAGS)
 
 # install to PREFIX
