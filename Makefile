@@ -237,7 +237,6 @@ $(ODIR)/%.o: $(SDIR)/%.cc | $(ODIR)
 # create (link) executable binary
 $(BDIR)/$(PROJECT): $(OBJS) $(STATICLIBS) | $(BDIR)
 	@echo "LINK $@"
-	@echo $(CC) -o $@ $(OBJS) $(LIBRARY) $(LFLAGS)
 	@$(CC) -o $@ $(OBJS) $(LIBRARY) $(LFLAGS)
 
 # install to PREFIX
