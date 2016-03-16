@@ -11,19 +11,19 @@ The idea is to use one makefile for all projects. The makefile dynamically detec
     project
     |-- Makefile
     |-- include
-        |-- \*.h
+        |-- *.h
     |-- src
         |-- main.[c|cc]
-        |-- \*.cc
-        |-- \*.c
+        |-- *.cc
+        |-- *.c
     |-- obj
-        |-- \*.o
-        |-- \*.d
+        |-- *.o
+        |-- *.d
     |-- lib
         |-- libproject.a
-        |-- libproject.so\*
+        |-- libproject.so*
     |-- tar
-        |-- project\*.tar.xz
+        |-- project*.tar.xz
 
 
 ## Usage
