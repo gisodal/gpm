@@ -3,19 +3,28 @@
 A general purpose makefile for C and C++ projects using the gcc compiler (linux).
 
 ## Synopsis
-Tired of writing a makefile for every project? This makefile compiles source projects and creates libraries for you, by simply putting your code files in the proper directory hierarchy and running this makefile. Customizations are optional and can be make in Makefile.user, in order to include external libraries, add an install prefix, set the name of your executable, etc.
+Tired of writing a makefile for every project? This makefile compiles C/C++ projects and creates libraries for you, by simply putting your code files in the proper directory hierarchy. Customizations are optional and can be made in Makefile.user, in order to include external libraries, add an install prefix, set the name of your executable, etc.
 
-## Requirement
-The only requirement is to put your C (extension \*.c) or C++ (extension \*.cc) files into the 'src' directory, and the header files into to the 'include' directory. The directory hierarchy relative to the makefile is as follows:
+## Setup
+The idea is to use one makefile for all projects. The makefile dynamically detects source/header files, and compiles the project without changing editing the makefile. This is done by using the following directory hierarchy:
 
-| Directory | Contents |
-| --- |--- |
-|src      | source files (\*.[c\|cc])|
-|include  | header files (\*.h)|
-|obj      | object and dependency files|
-|lib      | static/shared libraries|
-|bin      | executable binary|
-|tar      | tarballs|
+    project
+    |-- Makefile
+    |-- include
+        |-- \*.h
+    |-- src
+        |-- main.[c|cc]
+        |-- \*.cc
+        |-- \*.c
+    |-- obj
+        |-- \*.o
+        |-- \*.d
+    |-- lib
+        |-- libproject.a
+        |-- libproject.so\*
+    |-- tar
+        |-- project\*.tar.xz
+
 
 ## Usage
     > make [option]
