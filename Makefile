@@ -112,8 +112,7 @@ endif
 
 STATICLIB  = lib$(PROJECT).a
 DYNAMICLIB = lib$(PROJECT).so.$(VERSION).$(SUBVERSION).$(PATCHLEVEL)
-STATICLIBS = $(foreach l, $(STATIC_LIBRARIES), $(foreach d, $(LIBRARY_DIR), $(wildcard $d/lib$l.a)))
-
+STATICLIBS = $(foreach l, $(STATIC_LIBRARIES), $(foreach d, $(LIBRARY_DIR) $(subst :, ,$(LD_LIBRARY_PATH)), $(wildcard $d/lib$l.a)))
 # ------------------------------------------------------------------------------
 # Functions
 # ------------------------------------------------------------------------------
