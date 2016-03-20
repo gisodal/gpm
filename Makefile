@@ -34,6 +34,13 @@ CFLAGS   = -w
 O        = -O3
 
 # ------------------------------------------------------------------------------
+# Functions
+# ------------------------------------------------------------------------------
+
+recursive_wildcard=$(wildcard $1$2) $(foreach d,$(wildcard $1*),$(call recursive_wildcard,$d/,$2))
+find_staticlibrary=$(firstword $(foreach d, $(LIBRARY_DIR) $(subst :, ,$(LD_LIBRARY_PATH)), $(wildcard $d/lib$1.a)))
+
+# ------------------------------------------------------------------------------
 # Environment variables
 # ------------------------------------------------------------------------------
 
@@ -113,11 +120,6 @@ endif
 STATICLIB  = lib$(PROJECT).a
 DYNAMICLIB = lib$(PROJECT).so.$(VERSION).$(SUBVERSION).$(PATCHLEVEL)
 STATICLIBS = $(foreach l, $(STATIC_LIBRARIES), $(foreach d, $(LIBRARY_DIR) $(subst :, ,$(LD_LIBRARY_PATH)), $(wildcard $d/lib$l.a)))
-# ------------------------------------------------------------------------------
-# Functions
-# ------------------------------------------------------------------------------
-
-recursivewildcard=$(wildcard $1$2) $(foreach d,$(wildcard $1*),$(call recursivewildcard,$d/,$2))
 
 # ------------------------------------------------------------------------------
 # Rules
@@ -258,7 +260,7 @@ $(PREFIX)/$(LDIR)$(ARCH)/$(DYNAMICLIB): $(LDIR)/$(DYNAMICLIB) | $(PREFIX)/$(LDIR
 	@cp $(LDIR)/lib$(PROJECT).so* $(PREFIX)/$(LDIR)$(ARCH)
 
 install-include: $(PREFIX)/$(IDIR)/$(PROJECT) \
-	$(patsubst $(IDIR)/%,$(PREFIX)/$(IDIR)/$(PROJECT)/%,$(call recursivewildcard,$(IDIR)/,*.h))
+	$(patsubst $(IDIR)/%,$(PREFIX)/$(IDIR)/$(PROJECT)/%,$(call recursive_wildcard,$(IDIR)/,*.h))
 
 $(PREFIX)/$(IDIR)/$(PROJECT)/%.h: $(IDIR)/%.h
 	@echo "INSTALL $<"
