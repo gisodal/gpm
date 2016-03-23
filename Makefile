@@ -34,6 +34,36 @@ CFLAGS   = -w
 O        = -O3
 
 # ------------------------------------------------------------------------------
+# Color Functions
+# ------------------------------------------------------------------------------
+
+RESET = \033[0m
+BOLD  = \033[1m
+make_std_color = \033[3$1m 		# defined for 1 through 7
+make_color	   = \033[38;5;$1m	# defined for 1 through 255
+
+RED		= $(call make_std_color,1)
+YELLOW	= $(call make_std_color,3)
+GREY	= $(call make_color,8)
+WRN_COLOR = $(strip $(YELLOW))
+ERR_COLOR = $(strip $(RED))
+STD_COLOR = $(strip $(GREY))
+
+COLOR_OUTPUT = 2>&1 | \
+	while IFS='' read -r line; do \
+		if 	[[ $$line == *:[\ ]error:* ]] || \
+			[[ $$line == *:[\ ]undefined* ]] || \
+			[[ $$line == *:[\ ]fatal\ error:* ]] \
+			|| [[ $$line == *:[\ ]multiple[\ ]definition* ]]; then \
+			echo -e "$(ERR_COLOR)$${line}$(RESET)"; \
+        elif [[ $$line == *:[\ ]warning:* ]]; then   \
+            echo -e "$(WRN_COLOR)$${line}$(RESET)" ; \
+        else                                           \
+            echo -e "$(STD_COLOR)$${line}$(RESET)"; \
+        fi;\
+	done;
+
+# ------------------------------------------------------------------------------
 # Functions
 # ------------------------------------------------------------------------------
 
@@ -229,16 +259,16 @@ debug-dynamic: dynamic
 # create object and dependency files
 $(ODIR)/%.o: $(SDIR)/%.c | $(ODIR)
 	@echo "CC $<"
-	@gcc -o $@ -c $< $(O) $(CFLAGS) $(INCLUDE) -MMD
+	@gcc -o $@ -c $< $(O) $(CFLAGS) $(INCLUDE) -MMD $(COLOR_OUTPUT)
 
 $(ODIR)/%.o: $(SDIR)/%.cc | $(ODIR)
 	@echo "CXX $<"
-	@g++ -o $@ -c $< $(O) $(CFLAGS) $(CXXFLAGS) $(INCLUDE) -MMD
+	@g++ -o $@ -c $< $(O) $(CFLAGS) $(CXXFLAGS) $(INCLUDE) -MMD $(COLOR_OUTPUT)
 
 # create (link) executable binary
 $(BDIR)/$(PROJECT): $(OBJS) $(STATICLIBS) | $(BDIR)
 	@echo "LINK $@"
-	@$(CC) -o $@ $(OBJS) $(LIBRARY) $(LFLAGS)
+	@$(CC) -o $@ $(OBJS) $(LIBRARY) $(LFLAGS) $(COLOR_OUTPUT)
 
 # install to PREFIX
 install-bin: $(PREFIX)/$(BDIR)/$(PROJECT)

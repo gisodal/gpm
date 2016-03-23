@@ -1,6 +1,6 @@
 # General Purpose Makefile (GPM)
 
-A general purpose makefile for C and C++ projects using the gcc compiler (linux).
+A general purpose makefile for C and C++ projects using the gcc compiler (linux), with GCC output in color!
 
 ## Synopsis
 Tired of writing a makefile for every project? This makefile compiles C/C++ projects and creates libraries for you, by simply putting your code files in the proper directory hierarchy. Customizations are optional and can be made in Makefile.user, in order to include external libraries, add an install prefix, set the name of your executable, etc.
