@@ -2,9 +2,14 @@
 
 A general purpose makefile for C and C++ projects using the gcc compiler (linux), with errors and warnings in color!
 
+<br>
+
+
 <p align="center">
   <img style="max-width: 100%;" src="https://raw.githubusercontent.com/gisodal/gpm/images/images/coloredmake.png" />
 </p>
+
+
 
 ## Synopsis
 Tired of writing a makefile for every project? This makefile compiles C/C++ projects and creates libraries for you, by simply putting your code files in the proper directory hierarchy. Customizations are optional and can be made in Makefile.user, in order to include external libraries, add an install prefix, set the name of your executable, etc.
