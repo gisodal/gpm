@@ -7,7 +7,8 @@ IDIR 	= include
 
 SHELL	= /bin/bash
 CFLAGS 	= -Wall -Wextra
-OBJS 	= $(patsubst $(SDIR)/%.cc,$(ODIR)/%.o,$(wildcard $(SDIR)/*.cc) $(wildcard $(SDIR)/*.c))
+OBJS 	= $(patsubst $(SDIR)/%.cc,$(ODIR)/%.o,$(wildcard $(SDIR)/*.cc))
+OBJS   += $(patsubst $(SDIR)/%.c,$(ODIR)/%.o,$(wildcard $(SDIR)/*.c))
 
 RESET 	= \033[0m
 make_std_color = \033[3$1m 		# defined for 1 through 7
