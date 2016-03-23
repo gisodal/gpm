@@ -50,18 +50,20 @@ ERR_COLOR = $(strip $(RED))
 STD_COLOR = $(strip $(GREY))
 
 COLOR_OUTPUT = 2>&1 | \
-	while IFS='' read -r line; do \
-		if 	[[ $$line == *:[\ ]error:* ]] || \
-			[[ $$line == *:[\ ]undefined* ]] || \
-			[[ $$line == *:[\ ]fatal\ error:* ]] \
-			|| [[ $$line == *:[\ ]multiple[\ ]definition* ]]; then \
-			echo -e "$(ERR_COLOR)$${line}$(RESET)"; \
-        elif [[ $$line == *:[\ ]warning:* ]]; then   \
-            echo -e "$(WRN_COLOR)$${line}$(RESET)" ; \
-        else                                           \
-            echo -e "$(STD_COLOR)$${line}$(RESET)"; \
-        fi;\
-	done;
+	while IFS='' read -r line; do 									\
+		if 	[[ $$line == *:[\ ]error:* ]] || 						\
+			[[ $$line == *:[\ ]undefined* ]] || 					\
+			[[ $$line == *:[\ ]fatal\ error:* ]] 					\
+			|| [[ $$line == *:[\ ]multiple[\ ]definition* ]]; then 	\
+			echo -e "$(ERR_COLOR)$${line}$(RESET)"; 				\
+        elif [[ $$line == *:[\ ]warning:* ]]; then   				\
+            echo -e "$(WRN_COLOR)$${line}$(RESET)" ; 				\
+        else                                           				\
+            echo -e "$(STD_COLOR)$${line}$(RESET)"; 				\
+        fi;															\
+    done; exit $${PIPESTATUS[0]};
+
+
 
 # ------------------------------------------------------------------------------
 # Functions
