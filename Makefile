@@ -166,6 +166,7 @@ STATICLIBS = $(foreach l, $(STATIC_LIBRARIES), $(foreach d, $(LIBRARY_DIR) $(sub
 	build-x64       \
 	error           \
 	debug           \
+	object			\
 	strip			\
 	profile         \
 	assembly        \
@@ -302,6 +303,23 @@ $(PREFIX)/$(IDIR)/$(PROJECT)/%.h: $(IDIR)/%.h
 
 install: install-bin install-include install-static
 
+# compile object
+ifeq ($(firstword $(MAKECMDGOALS)),object)
+ARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
+$(eval $(ARGS):;@:)
+endif
+
+object: BASENAME = $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
+object: SRC = $(foreach f,$(BASENAME),$(wildcard $(SDIR)/$f.c) $(wildcard $(SDIR)/$f.cc))
+object: OBJ = $(foreach f,$(BASENAME),$(patsubst $(SDIR)/%.c,$(ODIR)/%.o,$(wildcard $(SDIR)/$f.c))) \
+			  $(foreach f,$(BASENAME),$(patsubst $(SDIR)/%.cc,$(ODIR)/%.o,$(wildcard $(SDIR)/$f.cc)))
+object:
+	@if [ -n "$(strip $(OBJ))" ]; then 								\
+		$(MAKE) --no-print-directory $(OBJ) | sed 's:\[.*\]::';		\
+	else 															\
+		echo "No sourcefile found with basename(s):  $(BASENAME)"; 	\
+	fi;
+
 # create source tree with main.cc
 setup: $(IDIR) $(SDIR)/main.cc
 
@@ -388,6 +406,7 @@ help:
 	@echo "    build-x86 : Explicitly compile for 32bit architecture"
 	@echo "    build-x64 : Explicitly compile for 64bit architecture"
 	@echo "    debug     : compile with debug symbols"
+	@echo "    object    : compile object of provided source basename"
 	@echo "    strip     : remove stl library symbols from binary"
 	@echo "    profile   : compile with profiling capabilities"
 	@echo "    assembly  : print assembly"
