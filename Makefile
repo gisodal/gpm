@@ -203,11 +203,15 @@ rebuild: clean build
 # explicitly compile for x86 architecture
 build-x86: ARCH=32
 build-x86: CFLAGS += -m32
+build-x86: CPPFLAGS += -m32
+build-x86: LDFLAGS += -m32
 build-x86: build
 
 # explicitly compile for 64 bit architecture
 build-x64: ARCH=64
 build-x64: CFLAGS += -m64
+build-x64: CPPFLAGS += -m64
+build-x64: LDFLAGS += -m64
 build-x64: build
 
 # compile with debug symbols
@@ -226,7 +230,7 @@ strip:
 
 # compile with profile
 profile: CFLAGS += -pg
-profile: LFLAGS = -pg
+profile: LDFLAGS = -pg
 profile: build
 
 # compile to assembly
@@ -271,7 +275,7 @@ $(ODIR)/%.o: $(SDIR)/%.cc | $(ODIR)
 # create (link) executable binary
 $(BDIR)/$(PROJECT): $(OBJS) $(STATICLIBS) | $(BDIR)
 	@echo "LINK $@"
-	@$(CC) -o $@ $(OBJS) $(LIBRARY) $(LFLAGS) $(COLOR_OUTPUT)
+	@$(CC) -o $@ $(OBJS) $(LIBRARY) $(LDFLAGS) $(COLOR_OUTPUT)
 
 # install to PREFIX
 install-bin: $(PREFIX)/$(BDIR)/$(PROJECT)
