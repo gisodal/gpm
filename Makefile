@@ -29,7 +29,7 @@ STATIC_LIBRARIES =
 SHARED_LIBRARIES =
 
 # compiler and compiler flags
-CXXFLAGS = -std=c++11
+CXXFLAGS = -w -std=c++11
 CFLAGS   = -w
 O        = -O3
 
@@ -103,6 +103,8 @@ MAKEFILE_USER = Makefile.user
 
 CDFLAGS += -g -Wall -Wextra -D DEBUG -Wno-format -Wno-write-strings \
 		   -Wno-unused-function -Wno-unused-parameter -Wno-system-headers
+
+CXXDFLAGS += $(CDFLAGS)
 
 # set containting directory is default project name
 ifeq ($(PROJECT),)
@@ -203,19 +205,20 @@ rebuild: clean build
 # explicitly compile for x86 architecture
 build-x86: ARCH=32
 build-x86: CFLAGS += -m32
-build-x86: CPPFLAGS += -m32
+build-x86: CXXFLAGS += -m32
 build-x86: LDFLAGS += -m32
 build-x86: build
 
 # explicitly compile for 64 bit architecture
 build-x64: ARCH=64
 build-x64: CFLAGS += -m64
-build-x64: CPPFLAGS += -m64
+build-x64: CXXFLAGS += -m64
 build-x64: LDFLAGS += -m64
 build-x64: build
 
 # compile with debug symbols
 debug: CFLAGS = $(CDFLAGS)
+debug: CXXFLAGS = $(CXXDFLAGS)
 debug: O = -O0
 debug: build
 
@@ -230,11 +233,13 @@ strip:
 
 # compile with profile
 profile: CFLAGS += -pg
+profile: CXXFLAGS += -pg
 profile: LDFLAGS = -pg
 profile: build
 
 # compile to assembly
 assembly: CFLAGS += -Wa,-a,-ad
+assembly: CXXFLAGS += -Wa,-a,-ad
 assembly: build
 
 # create static library
@@ -245,6 +250,7 @@ $(LDIR)/$(STATICLIB): $(LIBOBJS) $(STATICLIBS) | $(LDIR)
 	@ar rcs $(LDIR)/$(STATICLIB) $(LIBOBJS)
 
 debug-static: CFLAGS = $(CDFLAGS)
+debug-static: CXXFLAGS = $(CXXDFLAGS)
 debug-static: O = -O0
 debug-static: static
 
@@ -260,6 +266,7 @@ $(LDIR)/$(DYNAMICLIB): $(LIBOBJS) $(STATICLIBS) | $(LDIR)
 	@ln -sf $(DYNAMICLIB) $(LDIR)/lib$(PROJECT).so.$(VERSION).$(SUBVERSION)
 
 debug-dynamic: CFLAGS = $(CDFLAGS)
+debug-dynamic: CXXFLAGS = $(CXXDFLAGS)
 debug-dynamic: O = -O0
 debug-dynamic: dynamic
 
@@ -270,7 +277,7 @@ $(ODIR)/%.o: $(SDIR)/%.c | $(ODIR)
 
 $(ODIR)/%.o: $(SDIR)/%.cc | $(ODIR)
 	@echo "CXX $<"
-	@g++ -o $@ -c $< $(O) $(CFLAGS) $(CXXFLAGS) $(INCLUDE) -MMD $(COLOR_OUTPUT)
+	@g++ -o $@ -c $< $(O) $(CXXFLAGS) $(INCLUDE) -MMD $(COLOR_OUTPUT)
 
 # create (link) executable binary
 $(BDIR)/$(PROJECT): $(OBJS) $(STATICLIBS) | $(BDIR)
