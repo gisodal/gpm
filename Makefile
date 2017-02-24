@@ -224,6 +224,7 @@ debug: build
 
 # compile until first error
 error: CFLAGS += -Wfatal-errors
+error: CXXFLAGS += -Wfatal-errors
 error: build
 
 # strip stl library symbols
