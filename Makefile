@@ -102,7 +102,7 @@ MAKEFILE_USER = Makefile.user
 # ------------------------------------------------------------------------------
 
 CDFLAGS += -g -Wall -Wextra -D DEBUG -Wno-format -Wno-write-strings \
-		   -Wno-unused-function -Wno-unused-parameter -Wno-system-headers
+		   -Wno-unused-function -Wno-unused-parameter -Wno-system-headers -Wno-format-security
 
 CXXDFLAGS += $(CDFLAGS)
 
@@ -217,8 +217,8 @@ build-x64: LDFLAGS += -m64
 build-x64: build
 
 # compile with debug symbols
-debug: CFLAGS = $(CDFLAGS)
-debug: CXXFLAGS = $(CXXDFLAGS)
+debug: CFLAGS   += $(CDFLAGS)
+debug: CXXFLAGS += $(CXXDFLAGS)
 debug: O = -O0
 debug: build
 
@@ -250,8 +250,8 @@ $(LDIR)/$(STATICLIB): $(LIBOBJS) $(STATICLIBS) | $(LDIR)
 	@echo "LINK $(LDIR)/$(STATICLIB)"
 	@ar rcs $(LDIR)/$(STATICLIB) $(LIBOBJS)
 
-debug-static: CFLAGS = $(CDFLAGS)
-debug-static: CXXFLAGS = $(CXXDFLAGS)
+debug-static: CFLAGS   += $(CDFLAGS)
+debug-static: CXXFLAGS += $(CXXDFLAGS)
 debug-static: O = -O0
 debug-static: static
 
@@ -266,8 +266,8 @@ $(LDIR)/$(DYNAMICLIB): $(LIBOBJS) $(STATICLIBS) | $(LDIR)
 	@ln -sf $(DYNAMICLIB) $(LDIR)/lib$(PROJECT).so.$(VERSION)
 	@ln -sf $(DYNAMICLIB) $(LDIR)/lib$(PROJECT).so.$(VERSION).$(SUBVERSION)
 
-debug-dynamic: CFLAGS = $(CDFLAGS)
-debug-dynamic: CXXFLAGS = $(CXXDFLAGS)
+debug-dynamic: CFLAGS   += $(CDFLAGS)
+debug-dynamic: CXXFLAGS += $(CXXDFLAGS)
 debug-dynamic: O = -O0
 debug-dynamic: dynamic
 
