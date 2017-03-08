@@ -236,7 +236,13 @@ error: build
 # Be aware that [0-9]* does not mean 0 to infinite numbers, but 1 number followed by anything.
 strip:
 	@echo "STRIP $(BDIR)/$(PROJECT)"
-	@strip --wildcard --strip-symbol='_ZNSt[0-9]*' --strip-symbol='_ZSt[0-9]*' $(BDIR)/$(PROJECT)
+	@strip --wildcard 				\
+		--strip-symbol='_ZNKSt*'    \
+		--strip-symbol='_ZNSt*' 	\
+		--strip-symbol='_ZSt*'      \
+		--strip-symbol='_ZNSa*' 	\
+		--strip-symbol='*gnu_cxx*'  \
+		$(BDIR)/$(PROJECT)
 
 # compile with profile
 profile: CFLAGS += -pg
