@@ -102,7 +102,8 @@ MAKEFILE_USER = Makefile.user
 # ------------------------------------------------------------------------------
 
 CDFLAGS += -g -Wall -Wextra -D DEBUG -Wno-format -Wno-write-strings \
-		   -Wno-unused-function -Wno-unused-parameter -Wno-system-headers -Wno-format-security
+		   -Wno-unused-function -Wno-unused-parameter -Wno-system-headers \
+		   -Wno-format-security -Wno-ignored-qualifiers
 
 CXXDFLAGS += $(CDFLAGS)
 
@@ -228,9 +229,14 @@ error: CXXFLAGS += -Wfatal-errors
 error: build
 
 # strip stl library symbols
+# Determine regular expression <regex> that covers (STL) namespace using:
+# > nm --debug-syms <binary>
+# E.g., STL symbols start with '_ZSt[0-9]'. Use GNU strip to remove them:
+# > strip --wildcard --strip-symbol='<regex>' <binary>
+# Be aware that [0-9]* does not mean 0 to infinite numbers, but 1 number followed by anything.
 strip:
 	@echo "STRIP $(BDIR)/$(PROJECT)"
-	@strip -w -N '_ZNSt*' $(BDIR)/$(PROJECT)
+	@strip --wildcard --strip-symbol='_ZNSt[0-9]*' --strip-symbol='_ZSt[0-9]*' $(BDIR)/$(PROJECT)
 
 # compile with profile
 profile: CFLAGS += -pg
