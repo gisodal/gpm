@@ -101,7 +101,7 @@ MAKEFILE_USER = Makefile.user
 # Compilation variables
 # ------------------------------------------------------------------------------
 
-CDFLAGS += -g -Wall -Wextra -D DEBUG -Wno-format -Wno-write-strings \
+CDFLAGS += -ggdb3 -Wall -Wextra -D DEBUG -Wno-format -Wno-write-strings \
 		   -Wno-unused-function -Wno-unused-parameter -Wno-system-headers \
 		   -Wno-format-security -Wno-ignored-qualifiers
 
@@ -205,16 +205,16 @@ rebuild: clean build
 
 # explicitly compile for x86 architecture
 build-x86: ARCH=32
-build-x86: CFLAGS += -m32
+build-x86: CFLAGS   += -m32
 build-x86: CXXFLAGS += -m32
-build-x86: LDFLAGS += -m32
+build-x86: LDFLAGS  += -m32
 build-x86: build
 
 # explicitly compile for 64 bit architecture
 build-x64: ARCH=64
-build-x64: CFLAGS += -m64
+build-x64: CFLAGS   += -m64
 build-x64: CXXFLAGS += -m64
-build-x64: LDFLAGS += -m64
+build-x64: LDFLAGS  += -m64
 build-x64: build
 
 # compile with debug symbols
@@ -245,13 +245,13 @@ strip:
 		$(BDIR)/$(PROJECT)
 
 # compile with profile
-profile: CFLAGS += -pg
+profile: CFLAGS   += -pg
 profile: CXXFLAGS += -pg
-profile: LDFLAGS = -pg
+profile: LDFLAGS  += -pg
 profile: build
 
 # compile to assembly
-assembly: CFLAGS += -Wa,-a,-ad
+assembly: CFLAGS   += -Wa,-a,-ad
 assembly: CXXFLAGS += -Wa,-a,-ad
 assembly: build
 
