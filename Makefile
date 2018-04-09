@@ -29,8 +29,8 @@ STATIC_LIBRARIES =
 SHARED_LIBRARIES =
 
 # compiler and compiler flags
-CXXFLAGS = -w -std=c++11
-CFLAGS   = -w
+CXXFLAGS = -w -std=c++11 -DNDEBUG
+CFLAGS   = -w -DNDEBUG
 O        = -O3
 
 # ------------------------------------------------------------------------------
@@ -101,7 +101,7 @@ MAKEFILE_USER = Makefile.user
 # Compilation variables
 # ------------------------------------------------------------------------------
 
-CDFLAGS += -ggdb3 -Wall -Wextra -D DEBUG -Wno-format -Wno-write-strings \
+CDFLAGS += -ggdb3 -Wall -Wextra -DDEBUG -Wno-format -Wno-write-strings \
 		   -Wno-unused-function -Wno-unused-parameter -Wno-system-headers \
 		   -Wno-format-security -Wno-ignored-qualifiers
 
@@ -219,7 +219,9 @@ build-x64: build
 
 # compile with debug symbols
 debug: CFLAGS   += $(CDFLAGS)
+debug: CFLAGS   := $(filter-out -DNDEBUG,$(CFLAGS))
 debug: CXXFLAGS += $(CXXDFLAGS)
+debug: CXXFLAGS := $(filter-out -DNDEBUG,$(CXXFLAGS))
 debug: O = -O0
 debug: build
 
@@ -263,7 +265,9 @@ $(LDIR)/$(STATICLIB): $(LIBOBJS) $(STATICLIBS) | $(LDIR)
 	@ar rcs $(LDIR)/$(STATICLIB) $(LIBOBJS)
 
 debug-static: CFLAGS   += $(CDFLAGS)
+debug-static: CFLAGS   := $(filter-out -DNDEBUG,$(CFLAGS))
 debug-static: CXXFLAGS += $(CXXDFLAGS)
+debug-static: CXXFLAGS := $(filter-out -DNDEBUG,$(CXXFLAGS))
 debug-static: O = -O0
 debug-static: static
 
@@ -279,7 +283,9 @@ $(LDIR)/$(DYNAMICLIB): $(LIBOBJS) $(STATICLIBS) | $(LDIR)
 	@ln -sf $(DYNAMICLIB) $(LDIR)/lib$(PROJECT).so.$(VERSION).$(SUBVERSION)
 
 debug-dynamic: CFLAGS   += $(CDFLAGS)
+debug-dynamic: CFLAGS   := $(filter-out -D NDEBUG,$(CFLAGS))
 debug-dynamic: CXXFLAGS += $(CXXDFLAGS)
+debug-dynamic: CXXFLAGS := $(filter-out -D NDEBUG,$(CXXFLAGS))
 debug-dynamic: O = -O0
 debug-dynamic: dynamic
 
