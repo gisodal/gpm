@@ -29,8 +29,8 @@ STATIC_LIBRARIES =
 SHARED_LIBRARIES =
 
 # compiler and compiler flags
-CXXFLAGS = -w -std=c++11 -DNDEBUG
-CFLAGS   = -w -DNDEBUG
+CXXFLAGS = -w -std=c++11
+CFLAGS   = -w
 O        = -O3
 
 # ------------------------------------------------------------------------------
@@ -163,6 +163,7 @@ STATICLIBS = $(foreach l, $(STATIC_LIBRARIES), $(foreach d, $(LIBRARY_DIR) $(sub
 # rules not representing files
 .PHONY: $(PROJECT)  \
 	all             \
+	release         \
 	build           \
 	rebuild         \
 	build-x86       \
@@ -217,11 +218,14 @@ build-x64: CXXFLAGS += -m64
 build-x64: LDFLAGS  += -m64
 build-x64: build
 
+release: CFLAGS   += -ffast-math -DNDEBUG
+release: CXXFLAGS += -ffast-math -DNDEBUG
+release: build
+
 # compile with debug symbols
 debug: CFLAGS   += $(CDFLAGS)
-debug: CFLAGS   := $(filter-out -DNDEBUG,$(CFLAGS))
 debug: CXXFLAGS += $(CXXDFLAGS)
-debug: CXXFLAGS := $(filter-out -DNDEBUG,$(CXXFLAGS))
+debug: LDFLAGS  += -g
 debug: O = -O0
 debug: build
 
@@ -265,9 +269,7 @@ $(LDIR)/$(STATICLIB): $(LIBOBJS) $(STATICLIBS) | $(LDIR)
 	@ar rcs $(LDIR)/$(STATICLIB) $(LIBOBJS)
 
 debug-static: CFLAGS   += $(CDFLAGS)
-debug-static: CFLAGS   := $(filter-out -DNDEBUG,$(CFLAGS))
 debug-static: CXXFLAGS += $(CXXDFLAGS)
-debug-static: CXXFLAGS := $(filter-out -DNDEBUG,$(CXXFLAGS))
 debug-static: O = -O0
 debug-static: static
 
@@ -283,9 +285,7 @@ $(LDIR)/$(DYNAMICLIB): $(LIBOBJS) $(STATICLIBS) | $(LDIR)
 	@ln -sf $(DYNAMICLIB) $(LDIR)/lib$(PROJECT).so.$(VERSION).$(SUBVERSION)
 
 debug-dynamic: CFLAGS   += $(CDFLAGS)
-debug-dynamic: CFLAGS   := $(filter-out -D NDEBUG,$(CFLAGS))
 debug-dynamic: CXXFLAGS += $(CXXDFLAGS)
-debug-dynamic: CXXFLAGS := $(filter-out -D NDEBUG,$(CXXFLAGS))
 debug-dynamic: O = -O0
 debug-dynamic: dynamic
 
@@ -432,6 +432,7 @@ help:
 	@echo ""
 	@echo "Options:"
 	@echo "    build*    : compile to binary"
+	@echo "    release   : same as 'build', but with NDEBUG and fast-math
 	@echo "    rebuild   : recompile"
 	@echo "    build-x86 : Explicitly compile for 32bit architecture"
 	@echo "    build-x64 : Explicitly compile for 64bit architecture"
@@ -440,7 +441,7 @@ help:
 	@echo "    strip     : remove stl library symbols from binary"
 	@echo "    profile   : compile with profiling capabilities"
 	@echo "    assembly  : print assembly"
-	@echo "    lines     : print #lines in source files"
+	@echo "    lines     : print number of lines in source files"
 	@echo "    static    : create static library"
 	@echo "    dynamic   : create dynamic library"
 	@echo "    install   : compile and install project to prefix"
